@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-maroon: #AA0433;
+  --color-brand-dark-maroon: #760525;
+  --color-brand-gold: #927642;
+  --color-brand-black: #252527;
+  --color-brand-gray: #404040;
+  --color-brand-text-white: #FAFAFA;
+  --color-brand-bg-white: #F9F9F9;
+
+  --font-heading: "Oswald", sans-serif;
+  --font-body: "Montserrat", sans-serif;
+}
+
+/* Reset and default style */
+@layer base {
+  body {
+    background-color: var(--color-brand-bg-white);
+    color: var(--color-brand-black);
+    font-family: var(--font-body);
+    margin: 0;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color : var(--color-brand-black);
+  }
+} 
