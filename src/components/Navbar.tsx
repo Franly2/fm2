@@ -1,23 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react'; 
 import bgImg from '../assets/bg-nav.jpg';
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boolean) => void }) => {
+  
   useEffect(() => {
     if (isOpen) {
-      // Saat menu buka, disable sccroll
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-
-    // pastiin bisa scroll kalau komponen di-unmount
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
-  
 
   const navLinks = [
     { name: 'ABOUT US', href: '#', isHighlight: true },
@@ -39,24 +34,21 @@ const Navbar = () => {
           isOpen ? 'bg-transparent' : 'bg-[#404040]'
         }`}
       >
-        {/* Hamburger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="relative w-8 h-6 text-brand-text-white hover:text-brand-gold focus:outline-none"
           aria-label="Toggle Navigation Menu"
         >
           <span 
-            className={`absolute left-0 w-full h-[2px] bg-current transform transition-all duration-300 ease-in-out cursor-alias ${
+            className={`absolute left-0 w-full h-[2px] bg-current transform transition-all duration-300 ease-in-out cursor-pointer ${
               isOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'
             }`} 
           />
-          
           <span 
             className={`absolute right-[40%] top-1/2 -translate-y-1/2 w-[60%] h-[2px] bg-current transform transition-all duration-300 ease-in-out ${
               isOpen ? 'opacity-0 translate-x-3' : 'opacity-100'
             }`} 
           />
-          
           <span 
             className={`absolute left-0 w-full h-[2px] bg-current transform transition-all duration-300 ease-in-out ${
               isOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'
@@ -64,7 +56,6 @@ const Navbar = () => {
           />
         </button>
 
-        {/* bungkus oakai fade biar ga langsung hilang */}
         <div className={`flex flex-col items-center text-brand-text-white/70 transition-opacity duration-300 ${isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <span className="text-[10px] text-center mb-2 font-body uppercase tracking-widest leading-tight">
             Scroll<br/>Down
@@ -75,7 +66,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* blok isi navbar (ketika dibuka) */}
       <div 
         className={`fixed inset-0 z-50 bg-[#333333] transition-opacity duration-300 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -90,7 +80,6 @@ const Navbar = () => {
         <div className="relative z-10 w-full h-full flex flex-col px-8 md:px-24 pt-8 pb-8 max-w-4xl">
           
           <div className="flex items-center space-x-4 md:space-x-6 text-brand-text-white mb-10 h-6">
-            
             <a href="#" className="hover:text-brand-gold transition-colors">
               <svg className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
@@ -113,7 +102,6 @@ const Navbar = () => {
             <a href="#" className="font-body text-sm tracking-wide hover:text-brand-gold transition-colors">CONTACT US</a>
           </div>
 
-          {/* Search */}
           <div className="w-full md:w-96 border-b border-gray-400 pb-2 mb-10 flex items-center">
             <svg className="w-5 h-5 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -125,7 +113,6 @@ const Navbar = () => {
             />
           </div>
 
-          {/* Daftar Menu */}
           <div className="flex-1 overflow-y-auto pb-10 custom-scrollbar">
             <div className="flex flex-col space-y-5 md:space-y-6 items-start">
               {navLinks.map((link) => (
