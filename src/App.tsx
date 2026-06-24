@@ -11,14 +11,11 @@ import photo1Img from './assets/photo1.jpg';
 import arrowBlackImg from './assets/arrow-black.png';
 
 function App() {
-  // Lift state up ke sini biar Navbar bisa dikontrol dari luar kalau butuh
-  const [isNavOpen, setIsNavOpen] = useState(false);
-  
-  // Track active card buat efek hover. Hardcode index 1 dulu buat default state-nya
-  const [activeIndex, setActiveIndex] = useState(1);
-  
 
-  // Dummy data buat cards
+  const [isNavOpen, setIsNavOpen] = useState(false);
+
+  const [activeIndex, setActiveIndex] = useState(1);
+
   const cards = [
     {
       num: '01',
@@ -46,10 +43,8 @@ function App() {
     },
   ];
 
-  // State untuk melacak item aktif di section Legal Support
   const [activeSupportIndex, setActiveSupportIndex] = useState(1);
 
-  // Dummy data untuk Legal Support
   const legalSupports = [
     { type: 'Lawyer', title: 'Feedback on Law Reforms' },
     { type: 'Public', title: 'Alternative Dispute Resolution Schemes' },
@@ -57,14 +52,12 @@ function App() {
     { type: 'Lawyer', title: 'Future Lawyering Research Portal' },
   ];
 
-  // --- STATE UNTUK MEDIA & PRESS (NEWS API) ---
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingNews, setLoadingNews] = useState(true);
   const [newsError, setNewsError] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Mendefinisikan tipe data untuk artikel berita
 interface Article {
   id: string;
   title: string;
@@ -75,7 +68,6 @@ interface Article {
   url: string;
 }
 
-// Mendefinisikan struktur balikan data dari The Guardian API
 interface GuardianApiItem {
   id: string;
   webTitle: string;
@@ -87,21 +79,20 @@ interface GuardianApiItem {
     trailText?: string;
   };
 }
-  // 1. FETCH API (The Guardian API)
+
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        // Menggunakan The Guardian API. 'test' adalah API key gratis untuk development.
-        // Mencari berita terkait hukum dengan tambahan field gambar (thumbnail) dan deskripsi (trailText)
+
+
         const res = await fetch('https://content.guardianapis.com/search?q=law%20AND%20society&show-fields=thumbnail,trailText&page-size=8&api-key=test');
         
         if (!res.ok) throw new Error('Failed to fetch news data');
         
         const data = await res.json();
 
-        // Mapping response dari API agar sesuai dengan kebutuhan desain card kita
         const formattedArticles = data.response.results.map((item: GuardianApiItem) => {
-          // Format tanggal menjadi DD MMM YYYY (Contoh: 24 May 2025)
+
           const rawDate = new Date(item.webPublicationDate);
           const formattedDate = rawDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
@@ -110,9 +101,9 @@ interface GuardianApiItem {
             title: item.webTitle,
             date: formattedDate,
             category: item.sectionName === 'Law' ? 'Press Release' : 'Media',
-            // Membersihkan tag HTML dari excerpt menggunakan Regex
+
             excerpt: item.fields?.trailText?.replace(/(<([^>]+)>)/gi, "") || "Read the full article for more details on this legal update.",
-            // Fallback image jika API tidak mengirimkan thumbnail
+
             image: item.fields?.thumbnail || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80',
             url: item.webUrl
           };
@@ -132,19 +123,17 @@ interface GuardianApiItem {
     fetchNews();
   }, []);
 
-  // 2. BONUS: AUTO-PLAY CAROUSEL & PAUSE ON HOVER
   useEffect(() => {
     if (isHovered || loadingNews || newsError) return;
     
     const interval = setInterval(() => {
       if (carouselRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        
-        // Jika scroll sudah mentok di kanan, kembalikan ke awal (Loop)
+
         if (scrollLeft + clientWidth >= scrollWidth - 10) {
           carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          // Scroll bergeser ke kanan sejauh lebar 1 kartu
+
           const cardWidth = carouselRef.current.children[0].clientWidth;
           carouselRef.current.scrollBy({ left: cardWidth, behavior: 'smooth' });
         }
@@ -154,7 +143,6 @@ interface GuardianApiItem {
     return () => clearInterval(interval);
   }, [isHovered, loadingNews, newsError]);
 
-  // Fungsi untuk tombol panah navigasi manual
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
       const cardWidth = carouselRef.current.children[0].clientWidth;
@@ -172,7 +160,7 @@ interface GuardianApiItem {
       <div className="w-full">
         <main className="flex flex-col">
           
-          {/* --- HERO SECTION --- */}
+          
           <div className="relative w-full h-screen overflow-hidden bg-brand-bg-white">
             <img 
               src={heroImg} 
@@ -239,7 +227,7 @@ interface GuardianApiItem {
             </div>
           </div>
           
-          {/* --- ABOUT / WHAT WE DO SECTION --- */}
+          
           <div className="w-full bg-brand-bg-white p-16 md:p-16 lg:px-24">
             <div className="max-w-xl lg:max-w-5xl mx-auto">
               <div className="relative right-[38px] flex items-center space-x-3 mb-5">
@@ -266,10 +254,10 @@ interface GuardianApiItem {
             </div>
           </div>
 
-          {/* --- INTERACTIVE GRID CARDS --- */}
-          {/* --- INTERACTIVE GRID CARDS --- */}
+          
+          
           <div className="w-full bg-brand-bg-white ">
-            {/* Grid 2 kolom di mobile, 4 kolom di desktop */}
+            
             <div className="w-full grid grid-cols-2 lg:grid-cols-4 border-y border-gray-300">
               
               {cards.map((card, index) => {
@@ -281,7 +269,7 @@ interface GuardianApiItem {
                     onMouseEnter={() => setActiveIndex(index)}
                     className="flex flex-col border-r border-b lg:border-b-0 border-gray-300 cursor-pointer group transition-all duration-300"
                   >
-                    {/* Tinggi & padding disesuaikan untuk layar HP dan Desktop */}
+                    
                     <div className="relative h-[200px] md:h-[320px] lg:h-[380px] w-full overflow-hidden flex flex-col justify-between p-4 md:p-8">
                       <img
                         src={card.img}
@@ -289,14 +277,14 @@ interface GuardianApiItem {
                         className="absolute inset-0 w-full h-full object-cover grayscale z-0"
                       />
                       
-                      {/* OVERLAY: Menghapus md: agar langsung berubah gelap di semua lebar layar saat active */}
+                      
                       <div
                         className={`absolute inset-0 z-10 transition-colors duration-300 ${
                           isActive ? 'bg-[#4A4A4A]/90' : 'bg-[#EFEFEF]/85'
                         }`}
                       ></div>
 
-                      {/* ANGKA: Menghapus md: agar warna berubah abu terang di semua ukuran layar saat active */}
+                      
                       <div
                         className={`relative z-20 text-[15px] md:text-sm font-medium transition-colors duration-300 ${
                           isActive ? 'text-gray-300' : 'text-gray-600'
@@ -306,7 +294,7 @@ interface GuardianApiItem {
                       </div>
 
                       <div className="relative z-20 mt-auto mb-2 md:mb-4">
-                        {/* JUDUL: Diperbarui dengan font-normal (400), ukuran 26px di desktop, dan uppercase */}
+                        
                         <h3
                           className={`font-heading text-[18px] md:text-[22px] lg:text-[26px] font-normal leading-[1.1] whitespace-pre-line transition-colors duration-300 ${
                             isActive ? 'text-white' : 'text-brand-black'
@@ -315,7 +303,7 @@ interface GuardianApiItem {
                           {card.title}
                         </h3>
                         
-                          {/* DESKRIPSI: Menghapus md: agar laci deskripsi bisa terbuka di mobile maupun desktop saat active */}
+                          
                           <div
                             className={`overflow-hidden transition-all duration-500 ease-in-out ${
                               isActive ? 'max-h-24 opacity-100 mt-2 md:mt-3' : 'max-h-0 opacity-0 mt-0'
@@ -328,13 +316,13 @@ interface GuardianApiItem {
                       </div>
                     </div>
 
-                    {/* FOOTER BAWAH: Menghapus md: bg-[#987F55] agar background otomatis emas di layar manapun saat active */}
+                    
                     <div
                       className={`h-[50px] md:h-[70px] border-t border-gray-300 flex items-center justify-center transition-colors duration-300 ${
                         isActive ? 'bg-[#987F55]' : 'bg-[#F9F9F9]'
                       }`}
                     >
-                      {/* Menggunakan kondisi index === 2 yang sudah diperbaiki sebelumnya */}
+                      
                       <div
                         className={`flex ${index === 2 ? 'md:mr-[60px]' : ''} mr-[90px] items-center space-x-2 text-[12px] md:text-sm transition-colors duration-300 ${
                           isActive ? 'text-white font-bold tracking-widest' : 'text-gray-500'
@@ -362,20 +350,20 @@ interface GuardianApiItem {
             </div>
           </div>
           
-          {/* --- 60TH ANNIVERSARY BANNER --- */}
+          
           <div className="relative w-full h-[400px] md:h-[550px] flex flex-col items-center justify-center bg-[#222222]">
             
-            {/* Background Image */}
+            
             <img
               src={Background60Img}
               alt="60th Anniversary Background"
               className="absolute inset-0 w-full h-full object-cover z-0 grayscale opacity-40"
             />
 
-            {/* Container Konten (Sama seperti kodemu) */}
+            
             <div className="relative z-20 flex flex-col items-center w-full max-w-6xl mx-auto px-4">
               <div className="relative w-full md:w-auto flex items-center justify-center py-5 md:py-6 px-6 md:px-20 mb-8 md:mb-12">
-                {/* <div className="md:top-[60px] top-[64px] opacity-70 absolute inset-0 bg-[#A31636] skew-x-[-30deg] shadow-lg h-[90px]"></div> */}
+                
                 <div className="md:top-[60px]  top-[64px] opacity-80 absolute bg-[#A31636] -skew-x-[30deg] shadow-lg h-[90px] w-[84%] md:w-[90%] left-[47%] -translate-x-1/2"></div>
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-8 text-white text-center">
                   <span className="relative right-[20px] md:bottom-[5px] font-heading text-[28px] md:text-[54px] font-normal leading-none tracking-normal uppercase md:mt-3">
@@ -407,8 +395,8 @@ interface GuardianApiItem {
               </button>
             </div>
 
-            {/* --- EFEK RIPPLE DI BAWAH BANNER --- */}
-            {/* Menggunakan CSS Masking agar warna ripple-nya persis sama dengan background Footer (#404040) */}
+            
+            
             <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300`}>
               <img 
                 src={rippleHero} 
@@ -418,23 +406,23 @@ interface GuardianApiItem {
             </div>
 
           </div>
-          {/* --- ROAD TO 2027 SECTION --- */}
+          
           <div className="relative w-full bg-brand-bg-white py-12 md:py-24 px-8 md:px-16 lg:px-24 overflow-hidden">
             
-            {/* Trik Efek Tekstur Halus di Kanan (Opsional, meniru bercak di desain) */}
+            
             <div className="absolute top-0 right-0 w-[60%] md:w-[40%] h-full opacity-40 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-transparent to-transparent pointer-events-none z-0"></div>
 
-            {/* Container Pembungkus agar sejajar dengan section lain */}
+            
             <div className="max-w-xl lg:max-w-5xl mx-auto relative z-10 flex flex-col items-start">
               
-              {/* Teks ROAD TO 2027 */}
+              
               <div className="mb-4 md:mb-6">
                 <span className="font-heading text-[18px] md:text-[22px] font-normal text-brand-maroon uppercase tracking-wide underline underline-offset-[6px] decoration-1">
                   ROAD TO 2027
                 </span>
               </div>
 
-              {/* Judul Besar */}
+              
               <h2 className="font-heading text-[36px] md:text-[48px] lg:text-[56px] text-brand-black font-normal leading-[1.1] uppercase">
                 CELEBRATING A LEGACY, <br className="hidden md:block" />
                 JOURNEYING TO THE FUTURE
@@ -446,10 +434,10 @@ interface GuardianApiItem {
           <div className="w-full flex flex-col items-center">
             <div className="pt-[40px] border-t border-gray-300 w-[90%] max-w-6xl">
               
-              {/* Gunakan CSS Grid untuk kebebasan mengatur urutan (order) di Mobile vs Desktop */}
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-x-16 lg:gap-y-0 items-start">
                 
-                 {/* 1. Header Tahun  */}
+                 
                 <div className="order-1 lg:order-none lg:col-start-2 lg:row-start-1 flex justify-center lg:justify-end items-center space-x-3 md:space-x-4 font-heading text-[32px] md:text-[42px] tracking-widest font-medium mb-4 lg:mb-8">
                   <span className="text-[#987F55]">2025</span>
                   <span className="text-[#DCD7CB] text-2xl md:text-3xl">&middot;</span>
@@ -458,7 +446,7 @@ interface GuardianApiItem {
                   <span className="text-[#DCD7CB]">2027</span>
                 </div>
 
-                 {/* 2. Kolom Kiri: Gambar */}
+                 
                 <div className="order-2 lg:order-none lg:col-start-1 lg:row-start-1 lg:row-span-2 w-full">
                   <img 
                     src={photo1Img} 
@@ -467,7 +455,7 @@ interface GuardianApiItem {
                   />
                 </div>
 
-                {/* 3. Kolom Kanan: Teks & Sub-judul */}
+                
                 <div className="order-3 lg:order-none lg:col-start-2 lg:row-start-2 flex flex-col pt-0 lg:pt-4">
                   <h4 className="font-bold text-brand-black text-[18px] md:text-[20px] mb-4 leading-snug">
                     A new beginning - Laying the groundwork for our future
@@ -481,29 +469,29 @@ interface GuardianApiItem {
             </div>
           </div>
 
-          {/* --- LEGAL SUPPORT SECTION --- */}
-          {/* --- LEGAL SUPPORT SECTION --- */}
-          {/* Mengurangi padding vertikal (py) di mobile agar lebih proporsional */}
-          {/* --- LEGAL SUPPORT SECTION --- */}
-          {/* Mengurangi padding vertikal (py) di mobile agar lebih proporsional */}
+          
+          
+          
+          
+          
           <div className="w-full bg-brand-bg-white py-12 md:py-16 px-6 md:px-16 lg:px-24">
             <div className="max-w-6xl mx-auto">
               
-              {/* Header Section */}
-              {/* Gap diperkecil di mobile, margin bawah disesuaikan */}
+              
+              
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4 md:gap-0">
                 <div className="font-heading text-[16px] md:text-[22px] font-normal text-brand-maroon uppercase tracking-wide underline underline-offset-[6px] decoration-1">
                   LEGAL SUPPORT
                 </div>
                 
-                {/* Tambahan <br> khusus mobile agar teks turun setelah kata "THROUGH" seperti di gambar */}
+                
                 <h2 className="font-heading text-[24px] md:text-[38px] lg:text-[42px] text-brand-black leading-[1.2] md:leading-none uppercase text-left md:text-right">
                   GUIDING YOU THROUGH <br className="block md:hidden" /> EVERY STEPS
                 </h2>
               </div>
 
-              {/* List Container */}
-              {/* Jarak antar baris dipersempit jadi space-y-2 di mobile */}
+              
+              
               <div className="flex flex-col space-y-2 md:space-y-4 max-w-5xl mx-auto">
                 {legalSupports.map((item, index) => {
                   const isActive = activeSupportIndex === index;
@@ -514,21 +502,21 @@ interface GuardianApiItem {
                       onMouseEnter={() => setActiveSupportIndex(index)}
                       className="flex flex-row gap-2 md:gap-4 cursor-pointer group"
                     >
-                      {/* Kotak Kiri (Label Tipe) */}
-                      {/* Lebar dan font dikecilkan di mobile */}
+                      
+                      
                       <div className="w-[75px] md:w-[130px] shrink-0 bg-[#3A3A3A] text-white flex items-center justify-center py-3 md:py-5 font-heading tracking-wide text-[13px] md:text-[18px]">
                         {item.type}
                       </div>
 
-                      {/* Kotak Kanan (Judul & Arrow) */}
-                      {/* WAJIB ada min-w-0 di flex-child agar efek truncate di dalamnya bisa berfungsi */}
-                      {/* Kotak Kanan (Judul & Arrow) */}
+                      
+                      
+                      
                       <div 
                         className={`flex-1 flex items-center justify-between px-4 md:px-8 py-3 md:py-5 transition-colors duration-300 min-w-0 bg-[#EBEBEB] ${
                           isActive ? 'md:bg-[#987F55]' : ''
                         }`}
                       >
-                        {/* Teks Judul */}
+                        
                         <span 
                           className={`font-body text-[13px] md:text-[17px] truncate md:whitespace-normal md:overflow-visible transition-colors duration-300 text-brand-black/80 ${
                             isActive ? 'md:text-white' : ''
@@ -537,7 +525,7 @@ interface GuardianApiItem {
                           {item.title}
                         </span>
 
-                        {/* Arrow Animation (Di mobile kita sembunyikan total pakai 'hidden md:flex') */}
+                        
                         <div 
                           className={`hidden md:flex items-center text-white transition-opacity duration-300 ml-2 shrink-0 ${
                             isActive ? 'opacity-100' : 'opacity-0'
@@ -564,11 +552,11 @@ interface GuardianApiItem {
                 })}
               </div>
 
-              {/* Footer Link Button */}
+              
               <div className="mt-10 md:mt-16 flex justify-center">
                 <a 
                   href="#" 
-                  // Gunakan font-body (Montserrat), font-semibold (600), dan tracking-[0.01em] untuk 1%
+
                   className="group flex items-center font-body text-[18px] font-semibold uppercase tracking-[0.01em] leading-[30px] text-[#987F55] hover:text-brand-maroon transition-colors"
                 >
                   EXPLORE MORE SUPPORT
@@ -594,26 +582,26 @@ interface GuardianApiItem {
             </div>
           </div>
 
-          {/* --- MEDIA & PRESS SECTION (API INTEGRATION) --- */}
-          {/* Background abu-abu terang meniru desain Figma */}
+          
+          
           <div className="w-full bg-[#F5F5F5] py-16 md:py-24 px-6 md:px-16 lg:px-24">
             <div className="max-w-7xl mx-auto">
               
-              {/* Header */}
+              
               <div className="flex justify-center mb-10 md:mb-14">
                 <span className="font-heading text-[18px] md:text-[22px] font-normal text-brand-maroon uppercase tracking-wide underline underline-offset-[6px] decoration-1">
                   MEDIA & PRESS
                 </span>
               </div>
 
-              {/* Carousel Container (Track Hover State) */}
+              
               <div 
                 className="relative group"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
                 
-                {/* 1. ERROR STATE */}
+                
                 {newsError && (
                   <div className="w-full p-8 bg-red-50 text-red-600 text-center rounded-lg border border-red-200">
                     <p className="font-bold text-lg">Failed to load latest news.</p>
@@ -621,7 +609,7 @@ interface GuardianApiItem {
                   </div>
                 )}
 
-                {/* 2. SKELETON LOADING STATE (Bonus Poin) */}
+                
                 {loadingNews && !newsError && (
                   <div className="flex overflow-hidden gap-6">
                     {[1, 2, 3].map((n) => (
@@ -637,10 +625,10 @@ interface GuardianApiItem {
                   </div>
                 )}
 
-                {/* 3. ACTUAL CONTENT (SUCCESS STATE) */}
+                
                 {!loadingNews && !newsError && (
                   <>
-                    {/* Tombol Kiri (Bonus Poin: Accessibility aria-label) */}
+                    
                     <button 
                       onClick={() => scrollCarousel('left')}
                       aria-label="Previous slide"
@@ -649,7 +637,7 @@ interface GuardianApiItem {
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
                     
-                    {/* Tombol Kanan */}
+                    
                     <button 
                       onClick={() => scrollCarousel('right')}
                       aria-label="Next slide"
@@ -658,7 +646,7 @@ interface GuardianApiItem {
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
 
-                    {/* Scrollable Track (Kalkulasi lebar: 1 kolom di HP, 2 di Tablet, 3 di Desktop) */}
+                    
                     <div 
                       ref={carouselRef}
                       className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 [&::-webkit-scrollbar]:hidden"
@@ -669,7 +657,7 @@ interface GuardianApiItem {
                           key={article.id} 
                           className="snap-start flex-none w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] flex flex-col group/card"
                         >
-                          {/* Image Thumbnail (Hitam Putih bawaan, berwarna saat di-hover!) */}
+                          
                           <div className="w-full h-[200px] lg:h-[240px] overflow-hidden mb-5 bg-gray-200">
                             <img 
                               src={article.image} 
@@ -679,22 +667,22 @@ interface GuardianApiItem {
                             />
                           </div>
 
-                          {/* Article Title (Truncate max 2 lines) */}
+                          
                           <h3 className="font-heading text-[24px] font-normal uppercase text-brand-black leading-none line-clamp-2 mb-2 group-hover/card:text-brand-maroon transition-colors">
                             {article.title}
                           </h3>
 
-                          {/* Meta Category & Date */}
+                          
                           <p className="mt-[17px] font-body text-[16px] font-semibold text-gray-800 mb-3 tracking-normal leading-none">
                             {article.category} | <span className="font-normal">{article.date}</span>
                           </p>
 
-                          {/* Short Excerpt (Truncate max 3 lines) */}
+                          
                           <p className="font-body text-[18px] font-normal text-gray-600 leading-[30px] tracking-normal line-clamp-3 mb-6">
                             {article.excerpt}
                           </p>
 
-                          {/* Read More Link */}
+                          
                           <a 
                             href={article.url}
                             target="_blank"
