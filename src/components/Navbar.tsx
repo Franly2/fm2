@@ -40,17 +40,17 @@ const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boole
           aria-label="Toggle Navigation Menu"
         >
           <span 
-            className={`absolute left-0 w-full h-[2px] bg-current transform transition-all duration-300 ease-in-out cursor-pointer ${
+            className={`absolute left-0 w-full h-[3px] bg-current transform transition-all duration-300 ease-in-out cursor-pointer ${
               isOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'
             }`} 
           />
           <span 
-            className={`absolute right-[40%] top-1/2 -translate-y-1/2 w-[60%] h-[2px] bg-current transform transition-all duration-300 ease-in-out ${
+            className={`absolute right-[40%] top-1/2 -translate-y-1/2 w-[60%] h-[3px] bg-current transform transition-all duration-300 ease-in-out ${
               isOpen ? 'opacity-0 translate-x-3' : 'opacity-100'
             }`} 
           />
           <span 
-            className={`absolute left-0 w-full h-[2px] bg-current transform transition-all duration-300 ease-in-out ${
+            className={`absolute left-0 w-full h-[3px] bg-current transform transition-all duration-300 ease-in-out ${
               isOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'
             }`} 
           />

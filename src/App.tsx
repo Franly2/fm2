@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import athenaImg from './assets/athena.png';
@@ -8,6 +8,7 @@ import arrow from './assets/arrow.svg';
 import rippleHero from './assets/ripple-hero.png';
 import Background60Img from './assets/60-background.png';
 import photo1Img from './assets/photo1.jpg';
+import arrowBlackImg from './assets/arrow-black.png';
 
 function App() {
   // Lift state up ke sini biar Navbar bisa dikontrol dari luar kalau butuh
@@ -41,7 +42,7 @@ function App() {
       num: '04',
       title: 'Specialists\nDirectory',
       desc: 'Lorem ipsum dolor sit\namet Lorem ipsum',
-      img: 'https://images.unsplash.com/photo-1497215848147-75e113264e1c?q=80&w=600&auto=format&fit=crop',
+      img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=600&auto=format&fit=crop', 
     },
   ];
 
@@ -55,6 +56,114 @@ function App() {
     { type: 'Lawyer', title: "Members' Support Schemes" },
     { type: 'Lawyer', title: 'Future Lawyering Research Portal' },
   ];
+
+  // --- STATE UNTUK MEDIA & PRESS (NEWS API) ---
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [newsError, setNewsError] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  // Mendefinisikan tipe data untuk artikel berita
+interface Article {
+  id: string;
+  title: string;
+  date: string;
+  category: string;
+  excerpt: string;
+  image: string;
+  url: string;
+}
+
+// Mendefinisikan struktur balikan data dari The Guardian API
+interface GuardianApiItem {
+  id: string;
+  webTitle: string;
+  webPublicationDate: string;
+  sectionName: string;
+  webUrl: string;
+  fields?: {
+    thumbnail?: string;
+    trailText?: string;
+  };
+}
+  // 1. FETCH API (The Guardian API)
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        // Menggunakan The Guardian API. 'test' adalah API key gratis untuk development.
+        // Mencari berita terkait hukum dengan tambahan field gambar (thumbnail) dan deskripsi (trailText)
+        const res = await fetch('https://content.guardianapis.com/search?q=law%20AND%20society&show-fields=thumbnail,trailText&page-size=8&api-key=test');
+        
+        if (!res.ok) throw new Error('Failed to fetch news data');
+        
+        const data = await res.json();
+
+        // Mapping response dari API agar sesuai dengan kebutuhan desain card kita
+        const formattedArticles = data.response.results.map((item: GuardianApiItem) => {
+          // Format tanggal menjadi DD MMM YYYY (Contoh: 24 May 2025)
+          const rawDate = new Date(item.webPublicationDate);
+          const formattedDate = rawDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+          return {
+            id: item.id,
+            title: item.webTitle,
+            date: formattedDate,
+            category: item.sectionName === 'Law' ? 'Press Release' : 'Media',
+            // Membersihkan tag HTML dari excerpt menggunakan Regex
+            excerpt: item.fields?.trailText?.replace(/(<([^>]+)>)/gi, "") || "Read the full article for more details on this legal update.",
+            // Fallback image jika API tidak mengirimkan thumbnail
+            image: item.fields?.thumbnail || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80',
+            url: item.webUrl
+          };
+        });
+
+        setArticles(formattedArticles);
+        setLoadingNews(false);
+      } catch (err) {
+        if (err instanceof Error) {
+          setNewsError(err.message);
+        } else {
+          setNewsError(String(err));
+        }
+        setLoadingNews(false);
+      }
+    };
+    fetchNews();
+  }, []);
+
+  // 2. BONUS: AUTO-PLAY CAROUSEL & PAUSE ON HOVER
+  useEffect(() => {
+    if (isHovered || loadingNews || newsError) return;
+    
+    const interval = setInterval(() => {
+      if (carouselRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+        
+        // Jika scroll sudah mentok di kanan, kembalikan ke awal (Loop)
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          // Scroll bergeser ke kanan sejauh lebar 1 kartu
+          const cardWidth = carouselRef.current.children[0].clientWidth;
+          carouselRef.current.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }
+    }, 3500); // Bergerak otomatis setiap 3.5 detik
+
+    return () => clearInterval(interval);
+  }, [isHovered, loadingNews, newsError]);
+
+  // Fungsi untuk tombol panah navigasi manual
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const cardWidth = carouselRef.current.children[0].clientWidth;
+      carouselRef.current.scrollBy({ 
+        left: direction === 'left' ? -cardWidth : cardWidth, 
+        behavior: 'smooth' 
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-brand-bg-white relative overflow-x-hidden">
@@ -87,7 +196,7 @@ function App() {
               <img 
                 src={athenaImg} 
                 alt="Athena" 
-                className="relative z-10 w-full h-auto max-w-none -scale-x-100 object-top grayscale" 
+                className="relative z-10 w-full h-auto max-w-none -scale-x-100 object-top grayscale-85" 
               />
             </div>
             
@@ -98,13 +207,13 @@ function App() {
                 className="w-[162px] md:w-64 h-auto mb-10"
               />
 
-              <h1 className="font-heading text-[32px] md:text-[40px] lg:text-[4rem] font-bold text-brand-black leading-tight tracking-wide">
+              <h1 className="font-heading text-[28px] md:text-[36px] font-medium text-brand-black leading-none tracking-normal uppercase">
                 BECOME AN <br />
                 <span className="text-brand-maroon pl-[16px]">AFFILIATE</span> OF THE <br />
                 LAW SOCIETY
               </h1>
 
-              <p className="text-[16px] md:text-[18px] font-body text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-relaxed">
+              <p className="font-body text-[16px] font-normal text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-[30px] tracking-[0.01em]">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dict...
               </p>
 
@@ -131,9 +240,9 @@ function App() {
           </div>
           
           {/* --- ABOUT / WHAT WE DO SECTION --- */}
-          <div className="w-full bg-brand-bg-white p-8 md:p-16 lg:px-24">
+          <div className="w-full bg-brand-bg-white p-16 md:p-16 lg:px-24">
             <div className="max-w-xl lg:max-w-5xl mx-auto">
-              <div className="flex items-center space-x-3 mb-5">
+              <div className="relative right-[38px] flex items-center space-x-3 mb-5">
                 <svg className="w-6 h-6 md:w-8 md:h-8 text-[#333333]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                 </svg>
@@ -149,7 +258,7 @@ function App() {
               </h2>
 
               <p className="font-body text-[16px] md:text-[18px] text-brand-black/80 leading-relaxed lg:max-w-4xl">
-                The mission of the Law Society is to serve its members and the public by sustaining an independent bar which upholds the rule of law and ensures access to justice. As part of its mission in ensuring access to justice for the needy, the Law Society has established Pro Bono SG... 
+                The mission of the Law Society is to serve its members and the public by sustaining an independent bar which upholds the rule of law and ensures access to justice ... 
                 <span className="text-brand-gold font-bold cursor-pointer hover:underline ml-2 hover:text-brand-maroon transition-colors">
                   Read more
                 </span>
@@ -158,8 +267,10 @@ function App() {
           </div>
 
           {/* --- INTERACTIVE GRID CARDS --- */}
+          {/* --- INTERACTIVE GRID CARDS --- */}
           <div className="w-full bg-brand-bg-white ">
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-y border-gray-300">
+            {/* Grid 2 kolom di mobile, 4 kolom di desktop */}
+            <div className="w-full grid grid-cols-2 lg:grid-cols-4 border-y border-gray-300">
               
               {cards.map((card, index) => {
                 const isActive = activeIndex === index;
@@ -168,80 +279,82 @@ function App() {
                   <div
                     key={card.num}
                     onMouseEnter={() => setActiveIndex(index)}
-                    className="flex flex-col border-r border-gray-300 cursor-pointer group transition-all duration-300"
+                    className="flex flex-col border-r border-b lg:border-b-0 border-gray-300 cursor-pointer group transition-all duration-300"
                   >
-                    <div className="relative h-[320px] lg:h-[380px] w-full overflow-hidden flex flex-col justify-between p-8">
+                    {/* Tinggi & padding disesuaikan untuk layar HP dan Desktop */}
+                    <div className="relative h-[200px] md:h-[320px] lg:h-[380px] w-full overflow-hidden flex flex-col justify-between p-4 md:p-8">
                       <img
                         src={card.img}
                         alt={card.title}
                         className="absolute inset-0 w-full h-full object-cover grayscale z-0"
                       />
                       
+                      {/* OVERLAY: Menghapus md: agar langsung berubah gelap di semua lebar layar saat active */}
                       <div
                         className={`absolute inset-0 z-10 transition-colors duration-300 ${
                           isActive ? 'bg-[#4A4A4A]/90' : 'bg-[#EFEFEF]/85'
                         }`}
                       ></div>
 
+                      {/* ANGKA: Menghapus md: agar warna berubah abu terang di semua ukuran layar saat active */}
                       <div
-                        className={`relative z-20 text-sm font-medium transition-colors duration-300 ${
+                        className={`relative z-20 text-[15px] md:text-sm font-medium transition-colors duration-300 ${
                           isActive ? 'text-gray-300' : 'text-gray-600'
                         }`}
                       >
                         {card.num}
                       </div>
 
-                      <div className="relative z-20 mt-auto mb-4">
+                      <div className="relative z-20 mt-auto mb-2 md:mb-4">
+                        {/* JUDUL: Diperbarui dengan font-normal (400), ukuran 26px di desktop, dan uppercase */}
                         <h3
-                          className={`font-heading text-[22px] lg:text-[26px] font-bold leading-[1.2] whitespace-pre-line transition-colors duration-300 ${
+                          className={`font-heading text-[18px] md:text-[22px] lg:text-[26px] font-normal leading-[1.1] whitespace-pre-line transition-colors duration-300 ${
                             isActive ? 'text-white' : 'text-brand-black'
                           }`}
                         >
                           {card.title}
                         </h3>
                         
-                        <div
-                          className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                            isActive ? 'max-h-24 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'
-                          }`}
-                        >
-                          <p className="font-body text-[14px] text-gray-300 whitespace-pre-line leading-relaxed">
+                          {/* DESKRIPSI: Menghapus md: agar laci deskripsi bisa terbuka di mobile maupun desktop saat active */}
+                          <div
+                            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                              isActive ? 'max-h-24 opacity-100 mt-2 md:mt-3' : 'max-h-0 opacity-0 mt-0'
+                            }`}
+                          >
+                          <p className="font-body text-[18px] font-normal text-gray-300 whitespace-pre-line leading-[30px] tracking-normal">
                             {card.desc}
                           </p>
                         </div>
                       </div>
                     </div>
 
+                    {/* FOOTER BAWAH: Menghapus md: bg-[#987F55] agar background otomatis emas di layar manapun saat active */}
                     <div
-                      className={`h-[70px] border-t border-gray-300 flex items-center justify-center transition-colors duration-300 ${
+                      className={`h-[50px] md:h-[70px] border-t border-gray-300 flex items-center justify-center transition-colors duration-300 ${
                         isActive ? 'bg-[#987F55]' : 'bg-[#F9F9F9]'
                       }`}
                     >
+                      {/* Menggunakan kondisi index === 2 yang sudah diperbaiki sebelumnya */}
                       <div
-                        className={`flex items-center space-x-2 text-sm transition-colors duration-300 ${
+                        className={`flex ${index === 2 ? 'md:mr-[60px]' : ''} mr-[90px] items-center space-x-2 text-[12px] md:text-sm transition-colors duration-300 ${
                           isActive ? 'text-white font-bold tracking-widest' : 'text-gray-500'
                         }`}
                       >
-                        {isActive && <span>MORE DETAIL</span>}
-                        
+                        {isActive && (
+                          <span className="hidden md:inline font-body text-[18px] font-semibold uppercase leading-[30px] tracking-[0.01em]">
+                            MORE DETAIL
+                          </span>
+                        )}
                         <div className="flex items-center">
-                          <span className="tracking-widest mr-1">...</span>
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className={`transition-transform duration-300 ${isActive ? 'translate-x-1' : ''}`}
-                          >
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                          </svg>
+                          <img
+                            src={arrowBlackImg}
+                            alt="Arrow Icon"
+                            className="scale-90 relative right-[0px]"
+                          />
                         </div>
                       </div>
                     </div>
+
                   </div>
                 );
               })}
@@ -249,7 +362,6 @@ function App() {
             </div>
           </div>
           
-          {/* --- 60TH ANNIVERSARY BANNER --- */}
           {/* --- 60TH ANNIVERSARY BANNER --- */}
           <div className="relative w-full h-[400px] md:h-[550px] flex flex-col items-center justify-center bg-[#222222]">
             
@@ -456,21 +568,22 @@ function App() {
               <div className="mt-10 md:mt-16 flex justify-center">
                 <a 
                   href="#" 
-                  className="group flex items-center font-heading text-[14px] md:text-[18px] text-[#987F55] tracking-widest uppercase font-bold hover:text-brand-maroon transition-colors"
+                  // Gunakan font-body (Montserrat), font-semibold (600), dan tracking-[0.01em] untuk 1%
+                  className="group flex items-center font-body text-[18px] font-semibold uppercase tracking-[0.01em] leading-[30px] text-[#987F55] hover:text-brand-maroon transition-colors"
                 >
                   EXPLORE MORE SUPPORT
                   <div className="flex items-center ml-2 text-current">
                     <span className="tracking-widest mr-1 opacity-60">...</span>
                     <svg
-                      width="16"
-                      height="16"
+                      width="18"
+                      height="18"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="group-hover:translate-x-1 transition-transform duration-300 md:w-[18px] md:h-[18px]"
+                      className="group-hover:translate-x-1 transition-transform duration-300"
                     >
                       <path d="M5 12h14M12 5l7 7-7 7" />
                     </svg>
@@ -478,6 +591,131 @@ function App() {
                 </a>
               </div>
 
+            </div>
+          </div>
+
+          {/* --- MEDIA & PRESS SECTION (API INTEGRATION) --- */}
+          {/* Background abu-abu terang meniru desain Figma */}
+          <div className="w-full bg-[#F5F5F5] py-16 md:py-24 px-6 md:px-16 lg:px-24">
+            <div className="max-w-7xl mx-auto">
+              
+              {/* Header */}
+              <div className="flex justify-center mb-10 md:mb-14">
+                <span className="font-heading text-[18px] md:text-[22px] font-normal text-brand-maroon uppercase tracking-wide underline underline-offset-[6px] decoration-1">
+                  MEDIA & PRESS
+                </span>
+              </div>
+
+              {/* Carousel Container (Track Hover State) */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                
+                {/* 1. ERROR STATE */}
+                {newsError && (
+                  <div className="w-full p-8 bg-red-50 text-red-600 text-center rounded-lg border border-red-200">
+                    <p className="font-bold text-lg">Failed to load latest news.</p>
+                    <p className="text-sm mt-2">{newsError}</p>
+                  </div>
+                )}
+
+                {/* 2. SKELETON LOADING STATE (Bonus Poin) */}
+                {loadingNews && !newsError && (
+                  <div className="flex overflow-hidden gap-6">
+                    {[1, 2, 3].map((n) => (
+                      <div key={n} className="flex-none w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] flex flex-col animate-pulse">
+                        <div className="w-full h-[200px] lg:h-[240px] bg-gray-300 mb-4 rounded-sm"></div>
+                        <div className="w-3/4 h-6 bg-gray-300 mb-3 rounded-sm"></div>
+                        <div className="w-1/3 h-4 bg-gray-300 mb-4 rounded-sm"></div>
+                        <div className="w-full h-3 bg-gray-300 mb-2 rounded-sm"></div>
+                        <div className="w-5/6 h-3 bg-gray-300 mb-4 rounded-sm"></div>
+                        <div className="w-1/4 h-4 bg-gray-300 mt-auto rounded-sm"></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 3. ACTUAL CONTENT (SUCCESS STATE) */}
+                {!loadingNews && !newsError && (
+                  <>
+                    {/* Tombol Kiri (Bonus Poin: Accessibility aria-label) */}
+                    <button 
+                      onClick={() => scrollCarousel('left')}
+                      aria-label="Previous slide"
+                      className="absolute left-[-15px] lg:left-[-40px] top-[100px] z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-brand-maroon opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    
+                    {/* Tombol Kanan */}
+                    <button 
+                      onClick={() => scrollCarousel('right')}
+                      aria-label="Next slide"
+                      className="absolute right-[-15px] lg:right-[-40px] top-[100px] z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-brand-maroon opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+
+                    {/* Scrollable Track (Kalkulasi lebar: 1 kolom di HP, 2 di Tablet, 3 di Desktop) */}
+                    <div 
+                      ref={carouselRef}
+                      className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 [&::-webkit-scrollbar]:hidden"
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                      {articles.map((article) => (
+                        <div 
+                          key={article.id} 
+                          className="snap-start flex-none w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] flex flex-col group/card"
+                        >
+                          {/* Image Thumbnail (Hitam Putih bawaan, berwarna saat di-hover!) */}
+                          <div className="w-full h-[200px] lg:h-[240px] overflow-hidden mb-5 bg-gray-200">
+                            <img 
+                              src={article.image} 
+                              alt={article.title} 
+                              className="w-full h-full object-cover grayscale transition-all duration-500 group-hover/card:grayscale-0 group-hover/card:scale-105"
+                              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80'; }}
+                            />
+                          </div>
+
+                          {/* Article Title (Truncate max 2 lines) */}
+                          <h3 className="font-heading text-[24px] font-normal uppercase text-brand-black leading-none line-clamp-2 mb-2 group-hover/card:text-brand-maroon transition-colors">
+                            {article.title}
+                          </h3>
+
+                          {/* Meta Category & Date */}
+                          <p className="mt-[17px] font-body text-[16px] font-semibold text-gray-800 mb-3 tracking-normal leading-none">
+                            {article.category} | <span className="font-normal">{article.date}</span>
+                          </p>
+
+                          {/* Short Excerpt (Truncate max 3 lines) */}
+                          <p className="font-body text-[18px] font-normal text-gray-600 leading-[30px] tracking-normal line-clamp-3 mb-6">
+                            {article.excerpt}
+                          </p>
+
+                          {/* Read More Link */}
+                          <a 
+                            href={article.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-auto group/link flex items-center font-body text-[18px] font-semibold uppercase leading-[30px] tracking-[0.01em] text-[#987F55] hover:text-brand-maroon transition-colors"
+                          >
+                            MORE DETAIL
+                            <div className="flex items-center ml-[10px] scale-90 mt-[3px]">
+                            <img
+                              src={arrow}
+                              alt="Arrow Icon"
+                              className="scale-90 relative right-[0px]"
+                            />
+                          </div>
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
