@@ -6,6 +6,8 @@ import heroImg from './assets/hero.jpg';
 import logoImg from './assets/logo.png';
 import arrow from './assets/arrow.svg';
 import rippleHero from './assets/ripple-hero.png';
+import Background60Img from './assets/60-background.png';
+import photo1Img from './assets/photo1.jpg';
 
 function App() {
   // Lift state up ke sini biar Navbar bisa dikontrol dari luar kalau butuh
@@ -13,8 +15,9 @@ function App() {
   
   // Track active card buat efek hover. Hardcode index 1 dulu buat default state-nya
   const [activeIndex, setActiveIndex] = useState(1);
+  
 
-  // Dummy data buat cards. Nanti tinggal mapping respon API ke sini kalau backend udah kelar
+  // Dummy data buat cards
   const cards = [
     {
       num: '01',
@@ -42,6 +45,17 @@ function App() {
     },
   ];
 
+  // State untuk melacak item aktif di section Legal Support
+  const [activeSupportIndex, setActiveSupportIndex] = useState(1);
+
+  // Dummy data untuk Legal Support
+  const legalSupports = [
+    { type: 'Lawyer', title: 'Feedback on Law Reforms' },
+    { type: 'Public', title: 'Alternative Dispute Resolution Schemes' },
+    { type: 'Lawyer', title: "Members' Support Schemes" },
+    { type: 'Lawyer', title: 'Future Lawyering Research Portal' },
+  ];
+
   return (
     <div className="min-h-screen bg-brand-bg-white relative overflow-x-hidden">
       <Navbar isOpen={isNavOpen} setIsOpen={setIsNavOpen} />
@@ -50,7 +64,6 @@ function App() {
         <main className="flex flex-col">
           
           {/* --- HERO SECTION --- */}
-          {/* Note: Lumayan tricky di absolute positioning & z-index, don't break this! */}
           <div className="relative w-full h-screen overflow-hidden bg-brand-bg-white">
             <img 
               src={heroImg} 
@@ -58,13 +71,11 @@ function App() {
               className="absolute inset-0 w-full h-full object-cover z-0 grayscale opacity-40" 
             />
 
-            {/* Athena image wrapper dengan custom translate buat positioning tiap breakpoint */}
             <div className="absolute z-10 transform 
                             -bottom-[125px] -left-[45px] w-[700px] translate-x-[-25%] translate-y-[15%] 
                             md:left-[0px] md:w-[850px] md:-translate-x-[20%] md:translate-y-[10%] 
                             xl:left-[50px] xl:w-[1000px] xl:-translate-x-[15%] xl:translate-y-[5%]">
               
-              {/* Dekorasi block merah di belakang Athena */}
               <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
                 <div className="absolute opacity-80 bg-[#760525] 
                                 left-[35px] w-[50%] h-[78px] bottom-[550px] rotate-[37deg]"></div>
@@ -80,7 +91,6 @@ function App() {
               />
             </div>
             
-            {/* Main Hero Content (Text & Call to action) */}
             <div className="relative z-20 h-full flex flex-col justify-start pt-[26px] pl-8 md:pl-16 lg:pl-24 pr-28 md:pr-32">
               <img
                 src={logoImg}
@@ -111,7 +121,6 @@ function App() {
               </a>
             </div>
 
-            {/* Ripple Effect Divider. Pake invert biar blend in sama next section */}
             <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
               <img 
                 src={rippleHero} 
@@ -123,9 +132,7 @@ function App() {
           
           {/* --- ABOUT / WHAT WE DO SECTION --- */}
           <div className="w-full bg-brand-bg-white p-8 md:p-16 lg:px-24">
-            {/* Centering wrapper pake mx-auto biar gak nabrak edge screen di ultrawide */}
             <div className="max-w-xl lg:max-w-5xl mx-auto">
-              
               <div className="flex items-center space-x-3 mb-5">
                 <svg className="w-6 h-6 md:w-8 md:h-8 text-[#333333]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
@@ -136,7 +143,6 @@ function App() {
                 </span>
               </div>
 
-              {/* Ngakalin responsive line break, biar rapi di desktop tapi tetep oke di mobile */}
               <h2 className="font-heading text-[28px] md:text-[38px] lg:text-[42px] text-brand-black leading-[1.2] mb-6">
                 WE CARRY OUT VARIOUS <br className="hidden md:block lg:hidden" />
                 STATUTORY FUNCTIONS
@@ -152,10 +158,9 @@ function App() {
           </div>
 
           {/* --- INTERACTIVE GRID CARDS --- */}
-          <div className="w-full bg-brand-bg-white pb-16">
-            <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-l border-y border-gray-300">
+          <div className="w-full bg-brand-bg-white ">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-y border-gray-300">
               
-              {/* Iterate data cards. Handle active state pas onMouseEnter (lebih smooth dibanding onClick) */}
               {cards.map((card, index) => {
                 const isActive = activeIndex === index;
 
@@ -165,7 +170,6 @@ function App() {
                     onMouseEnter={() => setActiveIndex(index)}
                     className="flex flex-col border-r border-gray-300 cursor-pointer group transition-all duration-300"
                   >
-                    {/* Upper Wrapper: Background image + Darken overlay logic */}
                     <div className="relative h-[320px] lg:h-[380px] w-full overflow-hidden flex flex-col justify-between p-8">
                       <img
                         src={card.img}
@@ -187,7 +191,6 @@ function App() {
                         {card.num}
                       </div>
 
-                      {/* Titles & Smooth reveal description pake max-h trick */}
                       <div className="relative z-20 mt-auto mb-4">
                         <h3
                           className={`font-heading text-[22px] lg:text-[26px] font-bold leading-[1.2] whitespace-pre-line transition-colors duration-300 ${
@@ -209,7 +212,6 @@ function App() {
                       </div>
                     </div>
 
-                    {/* Lower Wrapper: Footer button + Arrow animation */}
                     <div
                       className={`h-[70px] border-t border-gray-300 flex items-center justify-center transition-colors duration-300 ${
                         isActive ? 'bg-[#987F55]' : 'bg-[#F9F9F9]'
@@ -220,7 +222,6 @@ function App() {
                           isActive ? 'text-white font-bold tracking-widest' : 'text-gray-500'
                         }`}
                       >
-                        {/* Conditional render text "MORE DETAIL" */}
                         {isActive && <span>MORE DETAIL</span>}
                         
                         <div className="flex items-center">
@@ -241,10 +242,241 @@ function App() {
                         </div>
                       </div>
                     </div>
-
                   </div>
                 );
               })}
+
+            </div>
+          </div>
+          
+          {/* --- 60TH ANNIVERSARY BANNER --- */}
+          {/* --- 60TH ANNIVERSARY BANNER --- */}
+          <div className="relative w-full h-[400px] md:h-[550px] flex flex-col items-center justify-center bg-[#222222]">
+            
+            {/* Background Image */}
+            <img
+              src={Background60Img}
+              alt="60th Anniversary Background"
+              className="absolute inset-0 w-full h-full object-cover z-0 grayscale opacity-40"
+            />
+
+            {/* Container Konten (Sama seperti kodemu) */}
+            <div className="relative z-20 flex flex-col items-center w-full max-w-6xl mx-auto px-4">
+              <div className="relative w-full md:w-auto flex items-center justify-center py-5 md:py-6 px-6 md:px-20 mb-8 md:mb-12">
+                {/* <div className="md:top-[60px] top-[64px] opacity-70 absolute inset-0 bg-[#A31636] skew-x-[-30deg] shadow-lg h-[90px]"></div> */}
+                <div className="md:top-[60px]  top-[64px] opacity-80 absolute bg-[#A31636] -skew-x-[30deg] shadow-lg h-[90px] w-[84%] md:w-[90%] left-[47%] -translate-x-1/2"></div>
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-8 text-white text-center">
+                  <span className="relative right-[20px] md:bottom-[5px] font-heading text-[28px] md:text-[54px] font-normal leading-none tracking-normal uppercase md:mt-3">
+                    Celebrating
+                  </span>
+                  <div className="flex items-start">
+                    <span className="font-heading text-[100px] md:text-[150px] font-normal leading-none tracking-normal uppercase">
+                      60
+                    </span>
+                    <span className="relative md:bottom-[30px] bottom-[20px] font-heading text-[28px] md:text-[42px] font-normal leading-none tracking-normal uppercase mt-2 md:mt-4">
+                      TH
+                    </span>
+                  </div>
+                  <span className="relative right-[15px] md:right-[40px] md:bottom-[5px] font-heading text-[28px] md:text-[54px] font-normal leading-none tracking-normal uppercase md:mt-3">
+                    Anniversary
+                  </span>
+                </div>
+              </div>
+
+              <button className="group flex flex-col items-center cursor-pointer transition-transform hover:scale-105 focus:outline-none mt-2">
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#987F55] flex items-center justify-center mb-3 transition-colors group-hover:bg-[#B39665] shadow-lg">
+                  <svg className="w-6 h-6 md:w-7 md:h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+                <span className="text-white text-[11px] md:text-[13px] tracking-[0.2em] uppercase font-body font-light opacity-90 group-hover:opacity-100">
+                  Play Video
+                </span>
+              </button>
+            </div>
+
+            {/* --- EFEK RIPPLE DI BAWAH BANNER --- */}
+            {/* Menggunakan CSS Masking agar warna ripple-nya persis sama dengan background Footer (#404040) */}
+            <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300`}>
+              <img 
+                src={rippleHero} 
+                alt="Ripple Divider" 
+                className="w-full h-[400px] brightness-0 invert" 
+              />
+            </div>
+
+          </div>
+          {/* --- ROAD TO 2027 SECTION --- */}
+          <div className="relative w-full bg-brand-bg-white py-12 md:py-24 px-8 md:px-16 lg:px-24 overflow-hidden">
+            
+            {/* Trik Efek Tekstur Halus di Kanan (Opsional, meniru bercak di desain) */}
+            <div className="absolute top-0 right-0 w-[60%] md:w-[40%] h-full opacity-40 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-200 via-transparent to-transparent pointer-events-none z-0"></div>
+
+            {/* Container Pembungkus agar sejajar dengan section lain */}
+            <div className="max-w-xl lg:max-w-5xl mx-auto relative z-10 flex flex-col items-start">
+              
+              {/* Teks ROAD TO 2027 */}
+              <div className="mb-4 md:mb-6">
+                <span className="font-heading text-[18px] md:text-[22px] font-normal text-brand-maroon uppercase tracking-wide underline underline-offset-[6px] decoration-1">
+                  ROAD TO 2027
+                </span>
+              </div>
+
+              {/* Judul Besar */}
+              <h2 className="font-heading text-[36px] md:text-[48px] lg:text-[56px] text-brand-black font-normal leading-[1.1] uppercase">
+                CELEBRATING A LEGACY, <br className="hidden md:block" />
+                JOURNEYING TO THE FUTURE
+              </h2>
+
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col items-center">
+            <div className="pt-[40px] border-t border-gray-300 w-[90%] max-w-6xl">
+              
+              {/* Gunakan CSS Grid untuk kebebasan mengatur urutan (order) di Mobile vs Desktop */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-x-16 lg:gap-y-0 items-start">
+                
+                 {/* 1. Header Tahun  */}
+                <div className="order-1 lg:order-none lg:col-start-2 lg:row-start-1 flex justify-center lg:justify-end items-center space-x-3 md:space-x-4 font-heading text-[32px] md:text-[42px] tracking-widest font-medium mb-4 lg:mb-8">
+                  <span className="text-[#987F55]">2025</span>
+                  <span className="text-[#DCD7CB] text-2xl md:text-3xl">&middot;</span>
+                  <span className="text-[#DCD7CB]">2026</span>
+                  <span className="text-[#DCD7CB] text-2xl md:text-3xl">&middot;</span>
+                  <span className="text-[#DCD7CB]">2027</span>
+                </div>
+
+                 {/* 2. Kolom Kiri: Gambar */}
+                <div className="order-2 lg:order-none lg:col-start-1 lg:row-start-1 lg:row-span-2 w-full">
+                  <img 
+                    src={photo1Img} 
+                    alt="Laying groundwork" 
+                    className="w-full h-auto object-cover" 
+                  />
+                </div>
+
+                {/* 3. Kolom Kanan: Teks & Sub-judul */}
+                <div className="order-3 lg:order-none lg:col-start-2 lg:row-start-2 flex flex-col pt-0 lg:pt-4">
+                  <h4 className="font-bold text-brand-black text-[18px] md:text-[20px] mb-4 leading-snug">
+                    A new beginning - Laying the groundwork for our future
+                  </h4>
+                  <p className="font-body text-brand-black/80 text-[15px] md:text-[16px] leading-relaxed">
+                    As we embark on our journey towards LawSoc's 60th anniversary, 2025 marks the beginning of our refreshed digital presence. This year, we're reimagining how we connect with members — through new digital tools, enhanced services, and stories from the legal community.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          {/* --- LEGAL SUPPORT SECTION --- */}
+          {/* --- LEGAL SUPPORT SECTION --- */}
+          {/* Mengurangi padding vertikal (py) di mobile agar lebih proporsional */}
+          {/* --- LEGAL SUPPORT SECTION --- */}
+          {/* Mengurangi padding vertikal (py) di mobile agar lebih proporsional */}
+          <div className="w-full bg-brand-bg-white py-12 md:py-16 px-6 md:px-16 lg:px-24">
+            <div className="max-w-6xl mx-auto">
+              
+              {/* Header Section */}
+              {/* Gap diperkecil di mobile, margin bawah disesuaikan */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-4 md:gap-0">
+                <div className="font-heading text-[16px] md:text-[22px] font-normal text-brand-maroon uppercase tracking-wide underline underline-offset-[6px] decoration-1">
+                  LEGAL SUPPORT
+                </div>
+                
+                {/* Tambahan <br> khusus mobile agar teks turun setelah kata "THROUGH" seperti di gambar */}
+                <h2 className="font-heading text-[24px] md:text-[38px] lg:text-[42px] text-brand-black leading-[1.2] md:leading-none uppercase text-left md:text-right">
+                  GUIDING YOU THROUGH <br className="block md:hidden" /> EVERY STEPS
+                </h2>
+              </div>
+
+              {/* List Container */}
+              {/* Jarak antar baris dipersempit jadi space-y-2 di mobile */}
+              <div className="flex flex-col space-y-2 md:space-y-4 max-w-5xl mx-auto">
+                {legalSupports.map((item, index) => {
+                  const isActive = activeSupportIndex === index;
+
+                  return (
+                    <div 
+                      key={index} 
+                      onMouseEnter={() => setActiveSupportIndex(index)}
+                      className="flex flex-row gap-2 md:gap-4 cursor-pointer group"
+                    >
+                      {/* Kotak Kiri (Label Tipe) */}
+                      {/* Lebar dan font dikecilkan di mobile */}
+                      <div className="w-[75px] md:w-[130px] shrink-0 bg-[#3A3A3A] text-white flex items-center justify-center py-3 md:py-5 font-heading tracking-wide text-[13px] md:text-[18px]">
+                        {item.type}
+                      </div>
+
+                      {/* Kotak Kanan (Judul & Arrow) */}
+                      {/* WAJIB ada min-w-0 di flex-child agar efek truncate di dalamnya bisa berfungsi */}
+                      {/* Kotak Kanan (Judul & Arrow) */}
+                      <div 
+                        className={`flex-1 flex items-center justify-between px-4 md:px-8 py-3 md:py-5 transition-colors duration-300 min-w-0 bg-[#EBEBEB] ${
+                          isActive ? 'md:bg-[#987F55]' : ''
+                        }`}
+                      >
+                        {/* Teks Judul */}
+                        <span 
+                          className={`font-body text-[13px] md:text-[17px] truncate md:whitespace-normal md:overflow-visible transition-colors duration-300 text-brand-black/80 ${
+                            isActive ? 'md:text-white' : ''
+                          }`}
+                        >
+                          {item.title}
+                        </span>
+
+                        {/* Arrow Animation (Di mobile kita sembunyikan total pakai 'hidden md:flex') */}
+                        <div 
+                          className={`hidden md:flex items-center text-white transition-opacity duration-300 ml-2 shrink-0 ${
+                            isActive ? 'opacity-100' : 'opacity-0'
+                          }`}
+                        >
+                          <span className="tracking-widest mr-1">...</span>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="translate-x-0 group-hover:translate-x-1 transition-transform duration-300 md:w-5 md:h-5"
+                          >
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Footer Link Button */}
+              <div className="mt-10 md:mt-16 flex justify-center">
+                <a 
+                  href="#" 
+                  className="group flex items-center font-heading text-[14px] md:text-[18px] text-[#987F55] tracking-widest uppercase font-bold hover:text-brand-maroon transition-colors"
+                >
+                  EXPLORE MORE SUPPORT
+                  <div className="flex items-center ml-2 text-current">
+                    <span className="tracking-widest mr-1 opacity-60">...</span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="group-hover:translate-x-1 transition-transform duration-300 md:w-[18px] md:h-[18px]"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </a>
+              </div>
 
             </div>
           </div>
