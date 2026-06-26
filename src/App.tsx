@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import athenaImg from './assets/athena.png';
+import athenaImg from './assets/athena2.png';
 import heroImg from './assets/hero.jpg';
 import logoImg from './assets/logo.png';
 import arrow from './assets/arrow.svg';
@@ -9,14 +9,36 @@ import rippleHero from './assets/ripple-hero.png';
 import Background60Img from './assets/60-background.png';
 import photo1Img from './assets/photo1.jpg';
 import arrowBlackImg from './assets/arrow-black.png';
+import BackgroundSupportImg from './assets/support-background.jpg'
+import phoneImg from './assets/phone.png'
+import briefImg from './assets/brief.png'
+import redBarImg from './assets/red-bar.png'
 
-function App() {
+// INTERFACE
+interface Article {
+  id: string;
+  title: string;
+  date: string;
+  category: string;
+  excerpt: string;
+  image: string;
+  url: string;
+}
 
-  const [isNavOpen, setIsNavOpen] = useState(false);
+interface GuardianApiItem {
+  id: string;
+  webTitle: string;
+  webPublicationDate: string;
+  sectionName: string;
+  webUrl: string;
+  fields?: {
+    thumbnail?: string;
+    trailText?: string;
+  };
+}
 
-  const [activeIndex, setActiveIndex] = useState(1);
-
-  const cards = [
+//STATIC DATA
+const cards = [
     {
       num: '01',
       title: 'Firm Closure\nDates',
@@ -43,56 +65,37 @@ function App() {
     },
   ];
 
-  const [activeSupportIndex, setActiveSupportIndex] = useState(1);
-
-  const legalSupports = [
+const legalSupports = [
     { type: 'Lawyer', title: 'Feedback on Law Reforms' },
     { type: 'Public', title: 'Alternative Dispute Resolution Schemes' },
     { type: 'Lawyer', title: "Members' Support Schemes" },
     { type: 'Lawyer', title: 'Future Lawyering Research Portal' },
   ];
 
+function App() {
+  // STATE FOR UI COMPONENT
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(1);
+  const [activeSupportIndex, setActiveSupportIndex] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // STATE FOR API FETCHING AND CAROUSEL
   const [articles, setArticles] = useState<Article[]>([]);
   const [loadingNews, setLoadingNews] = useState(true);
   const [newsError, setNewsError] = useState<string | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-
-interface Article {
-  id: string;
-  title: string;
-  date: string;
-  category: string;
-  excerpt: string;
-  image: string;
-  url: string;
-}
-
-interface GuardianApiItem {
-  id: string;
-  webTitle: string;
-  webPublicationDate: string;
-  sectionName: string;
-  webUrl: string;
-  fields?: {
-    thumbnail?: string;
-    trailText?: string;
-  };
-}
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-
-
         const res = await fetch('https://content.guardianapis.com/search?q=law%20AND%20society&show-fields=thumbnail,trailText&page-size=8&api-key=test');
         
         if (!res.ok) throw new Error('Failed to fetch news data');
         
         const data = await res.json();
 
+        // MAPPING RAW DATA FROM FETCH INTO GuardianApiItem INTERFACE
         const formattedArticles = data.response.results.map((item: GuardianApiItem) => {
-
           const rawDate = new Date(item.webPublicationDate);
           const formattedDate = rawDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
@@ -101,9 +104,7 @@ interface GuardianApiItem {
             title: item.webTitle,
             date: formattedDate,
             category: item.sectionName === 'Law' ? 'Press Release' : 'Media',
-
             excerpt: item.fields?.trailText?.replace(/(<([^>]+)>)/gi, "") || "Read the full article for more details on this legal update.",
-
             image: item.fields?.thumbnail || 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=600&q=80',
             url: item.webUrl
           };
@@ -123,6 +124,7 @@ interface GuardianApiItem {
     fetchNews();
   }, []);
 
+  // AUTO PLAY CAROUSEL (SLIDES EVERY 3.5s) AND STOP AUTOSLIDE WHEN HOVERED
   useEffect(() => {
     if (isHovered || loadingNews || newsError) return;
     
@@ -130,6 +132,7 @@ interface GuardianApiItem {
       if (carouselRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
 
+        // IF ITS THE LAST ITEM, BACK TO FIRST ITEM
         if (scrollLeft + clientWidth >= scrollWidth - 10) {
           carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
@@ -138,11 +141,13 @@ interface GuardianApiItem {
           carouselRef.current.scrollBy({ left: cardWidth, behavior: 'smooth' });
         }
       }
-    }, 3500); // Bergerak otomatis setiap 3.5 detik
+    }, 3500); 
 
+    // CLEAN UP THE STATE (MEMORY LEAK IF NOT)
     return () => clearInterval(interval);
   }, [isHovered, loadingNews, newsError]);
 
+  // HELPER FUNCTION FOR LEFT RIGHT BUTTON
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
       const cardWidth = carouselRef.current.children[0].clientWidth;
@@ -167,55 +172,53 @@ interface GuardianApiItem {
               alt="Hero Background" 
               className="absolute inset-0 w-full h-full object-cover z-0 grayscale opacity-40" 
             />
+            <img
+                  src={logoImg}
+                  alt="Law Society Logo"
+                  className="w-[162px] md:w-64 h-auto mt-10 ml-10 "
+                />
 
-            <div className="absolute z-10 transform 
-                            -bottom-[125px] -left-[45px] w-[700px] translate-x-[-25%] translate-y-[15%] 
-                            md:left-[0px] md:w-[850px] md:-translate-x-[20%] md:translate-y-[10%] 
-                            xl:left-[50px] xl:w-[1000px] xl:-translate-x-[15%] xl:translate-y-[5%]">
-              
-              <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-                <div className="absolute opacity-80 bg-[#760525] 
-                                left-[35px] w-[50%] h-[78px] bottom-[550px] rotate-[37deg]"></div>
+            <div className="flex flex-col md:flex-row items-center justify-between">
+               {/* TEXT */}
+              <div className="relative z-20 h-full flex flex-col justify-start pt-[26px] pl-8 md:pl-16 lg:pl-24 pr-28 md:pr-32">
                 
-                <div className="absolute opacity-80 bg-[#AA0433] 
-                                left-[30px] w-[50%] h-[68px] bottom-[45%] -rotate-[50deg]"></div>
-              </div>
 
-              <img 
-                src={athenaImg} 
-                alt="Athena" 
-                className="relative z-10 w-full h-auto max-w-none -scale-x-100 object-top grayscale-85" 
+                <h1 className="font-heading  text-[28px] md:text-[36px font-medium leading-none tracking-normal uppercase">
+                  BECOME AN <br />
+                  <span className="text-brand-maroon pl-[16px]">AFFILIATE</span> OF THE <br />
+                  LAW SOCIETY
+                </h1>
+
+                <p className="font-body text-[16px] font-normal text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-[30px] tracking-[0.01em]">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dict...
+                </p>
+
+                <a 
+                  href="#" 
+                  className="text-[16px] md:text-[18px] group inline-flex items-center mt-8 font-body text-brand-gold font-bold tracking-widest hover:text-brand-maroon transition-colors"
+                >
+                  FIND LAWYER 
+                  <img
+                    src={arrow}
+                    alt="Arrow Icon"
+                    className="ml-2 w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </a>
+              </div>
+              {/* RED ELEMENT AND ATHEN */}
+             <div className="relative w-[100%]">
+              <img
+                src={redBarImg}
+                alt="red-element"
+                className="absolute z-0"
+              />
+
+              <img
+                src={athenaImg}
+                alt="Athena"
+                className="absolute -scale-x-100 grayscale-85 z-10 [@media(max-height:720px)]:hidden"
               />
             </div>
-            
-            <div className="relative z-20 h-full flex flex-col justify-start pt-[26px] pl-8 md:pl-16 lg:pl-24 pr-28 md:pr-32">
-              <img
-                src={logoImg}
-                alt="Law Society Logo"
-                className="w-[162px] md:w-64 h-auto mb-10"
-              />
-
-              <h1 className="font-heading text-[28px] md:text-[36px] font-medium text-brand-black leading-none tracking-normal uppercase">
-                BECOME AN <br />
-                <span className="text-brand-maroon pl-[16px]">AFFILIATE</span> OF THE <br />
-                LAW SOCIETY
-              </h1>
-
-              <p className="font-body text-[16px] font-normal text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-[30px] tracking-[0.01em]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dict...
-              </p>
-
-              <a 
-                href="#" 
-                className="text-[16px] md:text-[18px] group inline-flex items-center mt-8 font-body text-brand-gold font-bold tracking-widest hover:text-brand-maroon transition-colors"
-              >
-                FIND LAWYER 
-                <img
-                  src={arrow}
-                  alt="Arrow Icon"
-                  className="ml-2 w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </a>
             </div>
 
             <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
@@ -707,6 +710,56 @@ interface GuardianApiItem {
             </div>
           </div>
 
+
+          <div className="relative w-full h-[650px] md:h-[200px] flex flex-col md:flex-row items-center ">
+            <div 
+              className="absolute inset-0 w-full h-full overflow-hidden bg-cover bg-center bg-no-repeat bg-[#F5F5F5] z-0"
+              style={{ backgroundImage: `url(${BackgroundSupportImg})` }}
+            >
+              <div className="opacity-87 hidden md:block absolute top-0 right-[-20%] md:h-full w-[65%] bg-[#AA0433] skew-x-[25deg] origin-bottom-left"></div>
+              <div className="opacity-87 block md:hidden absolute bottom-0 left-0 w-full h-[25%] bg-[#AA0433]"></div>
+            </div>
+
+            <div className="relative z-10 max-w-7xl mx-auto w-full px-6 md:px-16 flex flex-col md:flex-row items-center justify-between h-full pt-12 md:pt-0">
+              
+              <div className="w-full md:w-[50%] flex flex-col md:flex-row items-start text-left gap-4 md:gap-6 mt-0">
+                
+                <div className="mt-0 md:mt-2 shrink-0">
+                  <img 
+                    src={briefImg} 
+                    alt="Briefcase Icon" 
+                    className="w-[36px] h-[36px] md:w-[42px] md:h-[42px] object-contain" 
+                  />
+                </div>
+
+                <div className="flex flex-col items-start">
+                  <h2 className="font-heading text-[26px] font-normal text-brand-black leading-none tracking-normal mb-2 md:mb-3">
+                    Support for your career growth
+                  </h2>
+                  <p className="font-body text-[18px] font-normal text-gray-700 md:text-gray-600 leading-[30px] tracking-normal mb-6">
+                    A guidance on career and work related issues
+                  </p>
+                  
+                 <a href="#" className="group flex items-center justify-start font-body text-[18px] font-semibold text-[#987F55] leading-[30px] tracking-[0.01em] uppercase hover:text-[#A31636] transition-colors w-fit">
+                    FIND CAREER
+                      <img
+                              src={arrow}
+                              alt="Arrow Icon"
+                              className="scale-90 relative right-[0px] ml-1.5"
+                      />
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex absolute bottom-0 left-0 w-full h-[55%] md:h-full md:w-[50%] md:left-auto md:right-0 md:top-0 items-center justify-center z-20 pointer-events-none">
+                <img 
+                  src={phoneImg}
+                  alt="Career App on Mobile" 
+                  className="absolute -mb-[18px]  md:mb-[40px] left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:bottom-[-20%] h-[95%] md:h-[140%] object-contain md:right-[15%] drop-shadow-2xl pointer-events-auto" 
+                />
+              </div>
+            </div>
+          </div>
         </main>
         <Footer />
       </div>
