@@ -205,7 +205,7 @@ function App() {
               </div>
               <div className="flex flex-col md:flex-row items-stretch w-full h-screen overflow-hidden">
                 
-              {/* TEXT SECTION (Coklat) */}
+              {/* TEXT SECTION*/}
               <div className="relative md:w-1/2 h-[50%] md:h-full flex flex-col  px-8 md:px-16 lg:px-24 py-12 md:order-last overflow-y-auto">
                 
                 <h1 className="font-heading text-[1.75rem] md:text-[2.25rem] font-medium leading-none tracking-normal uppercase">
