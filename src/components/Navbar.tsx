@@ -30,7 +30,7 @@ const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boole
   return (
     <>
       <nav 
-        className={`absolute right-0 top-0 h-screen w-[105px] md:w-24 flex flex-col justify-between items-center py-8 z-[60] transition-colors duration-300 ${
+        className={`absolute right-0 top-0 h-screen w-[105px]  md:w-24 flex flex-col justify-between items-center py-8 z-[60] transition-colors duration-300 ${
           isOpen ? 'bg-transparent' : 'bg-[#404040]'
         }`}
       >
@@ -67,8 +67,8 @@ const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boole
       </nav>
 
       <div 
-        className={`fixed inset-0 z-50 bg-[#333333] transition-opacity duration-300 ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        className={`fixed top-0 right-0 z-50 h-full w-full md:w-[80%] bg-[#333333] transition-transform duration-500 ease-in-out shadow-2xl ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <img 
@@ -133,7 +133,14 @@ const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boole
           </div>
 
         </div>
+        
       </div>
+      <div 
+        onClick={() => setIsOpen(false)}
+        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-[3px] transition-opacity duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      />
     </>
   );
 };
