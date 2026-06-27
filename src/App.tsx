@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import athenaImg from './assets/athena2.png';
+import athenaImg from './assets/athena3.png';
 import heroImg from './assets/hero.jpg';
 import logoImg from './assets/logo.png';
 import arrow from './assets/arrow.svg';
@@ -12,7 +12,6 @@ import arrowBlackImg from './assets/arrow-black.png';
 import BackgroundSupportImg from './assets/support-background.jpg'
 import phoneImg from './assets/phone.png'
 import briefImg from './assets/brief.png'
-import redBarImg from './assets/red-bar.png'
 
 // INTERFACE
 interface Article {
@@ -166,7 +165,7 @@ function App() {
         <main className="flex flex-col">
           
           
-          <div className="relative w-full h-screen overflow-hidden bg-brand-bg-white">
+            <div className="relative h-screen overflow-hidden bg-brand-bg-white w-[calc(100%-105px)] md:w-[calc(100%-96px)]">
             <img 
               src={heroImg} 
               alt="Hero Background" 
@@ -177,25 +176,24 @@ function App() {
                   alt="Law Society Logo"
                   className="w-[162px] md:w-64 h-auto mt-10 ml-10 "
                 />
-
-            <div className="flex flex-col md:flex-row items-center justify-between">
-               {/* TEXT */}
-              <div className="relative z-20 h-full flex flex-col justify-start pt-[26px] pl-8 md:pl-16 lg:pl-24 pr-28 md:pr-32">
+              <div className="flex flex-col md:flex-row items-stretch w-full h-screen overflow-hidden">
                 
-
-                <h1 className="font-heading  text-[28px] md:text-[36px font-medium leading-none tracking-normal uppercase">
+              {/* TEXT SECTION (Coklat) */}
+              <div className="relative md:w-1/2 h-[50%] md:h-full flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 md:order-last overflow-y-auto">
+                
+                <h1 className="font-heading text-[1.75rem] md:text-[2.25rem] font-medium leading-none tracking-normal uppercase">
                   BECOME AN <br />
                   <span className="text-brand-maroon pl-[16px]">AFFILIATE</span> OF THE <br />
                   LAW SOCIETY
                 </h1>
 
-                <p className="font-body text-[16px] font-normal text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-[30px] tracking-[0.01em]">
+                <p className="font-body text-[1rem] font-normal text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-[30px] tracking-[0.01em]">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dict...
                 </p>
 
                 <a 
                   href="#" 
-                  className="text-[16px] md:text-[18px] group inline-flex items-center mt-8 font-body text-brand-gold font-bold tracking-widest hover:text-brand-maroon transition-colors"
+                  className="text-[1rem] md:text-[1.125rem] group inline-flex items-center mt-8 font-body text-brand-gold font-bold tracking-widest hover:text-brand-maroon transition-colors"
                 >
                   FIND LAWYER 
                   <img
@@ -205,22 +203,20 @@ function App() {
                   />
                 </a>
               </div>
-              {/* RED ELEMENT AND ATHEN */}
-             <div className="relative w-[100%]">
-              <img
-                src={redBarImg}
-                alt="red-element"
-                className="absolute z-0"
-              />
 
-              <img
-                src={athenaImg}
-                alt="Athena"
-                className="absolute -scale-x-100 grayscale-85 z-10 [@media(max-height:720px)]:hidden"
-              />
+              <div className="relative w-full md:w-1/2 h-[50%] md:h-full md:order-first shrink-0">
+                
+                {/* ATHENA */}
+                <img
+                  src={athenaImg}
+                  alt="Athena"
+                  
+                  className="w-full h-full object-contain object-left-bottom [@media(max-height:720px)]:hidden origin-bottom-left -translate-y-18 md:translate-y-0 transition-transform duration-300"
+                />
+                
             </div>
+              
             </div>
-
             <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
               <img 
                 src={rippleHero} 
