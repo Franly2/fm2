@@ -13,9 +13,6 @@ A responsive homepage implementation based on the Law Society of Singapore websi
 
 - **Pixel-Perfect UI:** Closely matched the Figma design including typography, colors, spacing, and image proportions.
 - **Responsive Layout:** 
-  - Desktop (≥ 1280px): Full navigation and 3 carousel cards visible.
-  - Tablet (768px – 1279px): Condensed layout and 2 carousel cards visible.
-  - Mobile (< 768px): Hamburger menu and 1 carousel card visible.
 - **Dynamic News Carousel:** Fetches real data from The Guardian API.
 
 ## 🛠️ Setup Instructions
@@ -52,10 +49,6 @@ To run this project locally on your machine, follow these steps:
 
 This project uses The Guardian Open Platform API to populate the News Carousel section.
 
-Why this API?
-It provides generous free limits, returns high-quality thumbnail images, and delivers clean metadata (like trailText for excerpts) which perfectly maps to the card design requirements.
-How to get an API Key:
-
     Visit The Guardian Open Platform.
 
     Select the Developer tier (Free).
@@ -70,5 +63,3 @@ How to get an API Key:
 
     Ripple effect color a bit doesn't match with figma mockup
     Statue sizing in medium screen a bit challenging
-
-Coded with passion for the Web Intern Test Case evaluation.
