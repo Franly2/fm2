@@ -161,19 +161,18 @@ function App() {
 
   return (
     <div className="min-h-screen bg-brand-bg-white relative overflow-x-hidden">
-      <div className={`absolute top-[79vh] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={` h-[100vh] absolute left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
               <img 
                 src={rippleHero} 
                 alt="Ripple Divider" 
-                className="w-full scale-120 h-[400px] brightness-0 invert" 
+                className=" absolute bottom-[-200px] w-full scale-120 h-[400px] brightness-0 invert" 
               />
             </div>
       <Navbar isOpen={isNavOpen} setIsOpen={setIsNavOpen} />
       
+      
       <div className="w-full">
         <main className="flex flex-col">
-          
-          
             <div className="relative h-screen overflow-hidden bg-brand-bg-white w-[calc(100%-105px)] md:w-[calc(100%-96px)]">
               <img 
                 src={heroImg} 
@@ -215,21 +214,21 @@ function App() {
               <div className="flex flex-col md:flex-row items-stretch w-full h-screen overflow-hidden">
                 
               {/* TEXT SECTION*/}
-              <div className="relative md:w-1/2 h-[50%] md:h-full flex flex-col  px-8 md:px-16 lg:px-24 py-12 md:order-last overflow-y-auto">
+              <div className="relative md:w-1/2 h-[50%] md:h-full flex flex-col px-8 md:px-16 lg:px-24  md:order-last overflow-y-auto">
                 
-                <h1 className="font-heading text-[1.75rem] md:text-[2.25rem] font-medium leading-none tracking-normal uppercase">
+                <h1 className="font-heading text-[36px] md:text-[72px] font-medium leading-none tracking-normal uppercase">
                   BECOME AN <br />
                   <span className="text-brand-maroon pl-[16px]">AFFILIATE</span> OF THE <br />
                   LAW SOCIETY
                 </h1>
 
-                <p className="font-body text-[1rem] font-normal text-brand-black/80 mt-6 max-w-sm md:max-w-md leading-[30px] tracking-[0.01em]">
+                <p className="font-body text-[16px] md:text-[18px] font-normal text-brand-black/80 mt-6 max-w-md md:max-w-lg leading-[30px] tracking-[0.01em]">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dict...
                 </p>
 
                 <a 
                   href="#" 
-                  className="text-[1rem] md:text-[1.125rem] group inline-flex items-center mt-8 font-body text-brand-gold font-bold tracking-widest hover:text-brand-maroon transition-colors"
+                  className="text-[18px] group inline-flex items-center mt-8 font-body text-brand-gold font-bold tracking-widest hover:text-brand-maroon transition-colors"
                 >
                   FIND LAWYER 
                   <img
@@ -251,7 +250,6 @@ function App() {
                 />
                 
             </div>
-              
             </div>
           </div>
           
@@ -503,7 +501,7 @@ function App() {
           
           
           <div 
-              className="w-full bg-cover bg-center bg-no-repeat py-12 md:py-16 px-6 md:px-16 lg:px-24 grayscale-100"
+              className="w-full bg-cover bg-center bg-no-repeat py-12 md:py-16 px-6 md:px-16 lg:px-24 grayscale-0"
               style={{ backgroundImage: `url(${dustyBackgroundImg})` }}
             >
             <div className="max-w-6xl mx-auto">
