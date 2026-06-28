@@ -37,8 +37,8 @@ const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boole
   return (
     <>
       <nav 
-        className={`absolute right-0 top-0 h-screen w-[105px] md:w-24 flex flex-col justify-between items-center py-8 z-[60] transition-colors duration-300 ${
-          isOpen ? 'bg-transparent pointer-events-none' : 'bg-[#404040]'
+        className={`absolute right-0 top-0 h-screen w-20 md:w-24 flex flex-col justify-between items-center py-8 z-60 transition-colors duration-300 ${
+          isOpen ? 'bg-transparent pointer-events-none' : 'bg-brand-gray'
         }`}
       >
         <button
@@ -48,9 +48,9 @@ const Navbar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (val: boole
           }`}
           aria-label="Toggle Navigation Menu"
         >
-          <span className={`absolute left-0 w-full h-[3px] bg-current transform transition-all duration-300 ease-in-out ${isOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'}`} />
+          <span className={`absolute left-0 w-full h-0.75 bg-current transform transition-all duration-300 ease-in-out ${isOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'}`} />
           
-          <span className={`absolute right-[40%] top-1/2 -translate-y-1/2 w-[60%] h-[3px] bg-current transform transition-all duration-300 ease-in-out ${isOpen ? 'opacity-0 translate-x-3' : 'opacity-100'}`} />
+          <span className={`absolute right-[40%] top-1/2 -translate-y-1/2 w-[60%] h-0.75 bg-current transform transition-all duration-300 ease-in-out ${isOpen ? 'opacity-0 translate-x-3' : 'opacity-100'}`} />
           
           <span className={`absolute left-0 w-full h-[3px] bg-current transform transition-all duration-300 ease-in-out ${isOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'bottom-0'}`} />
         </button>
