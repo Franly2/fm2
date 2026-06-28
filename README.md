@@ -69,5 +69,6 @@ How to get an API Key:
 ⚠️ Known Issues / Notes
 
     Ripple effect color a bit doesn't match with figma mockup
+    Statue sizing in medium screen a bit challenging
 
 Coded with passion for the Web Intern Test Case evaluation.
