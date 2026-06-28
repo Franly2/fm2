@@ -6,6 +6,7 @@ import heroImg from './assets/hero.jpg';
 import logoImg from './assets/logo.png';
 import arrow from './assets/arrow.svg';
 import rippleHero from './assets/ripple-hero.png';
+import dustyBackgroundImg from './assets/dustyBackgorund.png';
 import Background60Img from './assets/60-background.png';
 import photo1Img from './assets/photo1.jpg';
 import arrowBlackImg from './assets/arrow-black.png';
@@ -87,8 +88,9 @@ function App() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await fetch('https://content.guardianapis.com/search?q=law%20AND%20society&show-fields=thumbnail,trailText&page-size=8&api-key=test');
-        
+        const apiKey = import.meta.env.VITE_GUARDIAN_API_KEY;
+        const res = await fetch(`https://content.guardianapis.com/search?q=law%20AND%20society&show-fields=thumbnail,trailText&page-size=8&api-key=${apiKey}`);
+
         if (!res.ok) throw new Error('Failed to fetch news data');
         
         const data = await res.json();
@@ -159,6 +161,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-brand-bg-white relative overflow-x-hidden">
+      <div className={`absolute top-[79vh] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
+              <img 
+                src={rippleHero} 
+                alt="Ripple Divider" 
+                className="w-full scale-120 h-[400px] brightness-0 invert" 
+              />
+            </div>
       <Navbar isOpen={isNavOpen} setIsOpen={setIsNavOpen} />
       
       <div className="w-full">
@@ -243,13 +252,6 @@ function App() {
                 
             </div>
               
-            </div>
-            <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300 ${isNavOpen ? 'opacity-0' : 'opacity-100'}`}>
-              <img 
-                src={rippleHero} 
-                alt="Ripple Divider" 
-                className="w-full h-[400px] brightness-0 invert" 
-              />
             </div>
           </div>
           
@@ -427,7 +429,7 @@ function App() {
               <img 
                 src={rippleHero} 
                 alt="Ripple Divider" 
-                className="w-full h-[400px] brightness-0 invert" 
+                className="w-full h-[400px] brightness-0 invert scale-195" 
               />
             </div>
 
@@ -500,7 +502,10 @@ function App() {
           
           
           
-          <div className="w-full bg-brand-bg-white py-12 md:py-16 px-6 md:px-16 lg:px-24">
+          <div 
+              className="w-full bg-cover bg-center bg-no-repeat py-12 md:py-16 px-6 md:px-16 lg:px-24 grayscale-100"
+              style={{ backgroundImage: `url(${dustyBackgroundImg})` }}
+            >
             <div className="max-w-6xl mx-auto">
               
               
@@ -606,11 +611,18 @@ function App() {
               </div>
 
             </div>
+             <div className={`absolute -bottom-[200px] left-0 w-full pointer-events-none z-[70] transition-opacity duration-300`}>
+              <img 
+                src={rippleHero} 
+                alt="Ripple Divider" 
+                className="w-full h-[400px] brightness-0 invert scale-195" 
+              />
+            </div>
           </div>
 
           
           
-          <div className="w-full bg-[#F5F5F5] py-16 md:py-24 px-6 md:px-16 lg:px-24">
+          <div className="w-full bg-[#DEE2E6] py-16 md:py-24 px-6 md:px-16 lg:px-24">
             <div className="max-w-7xl mx-auto">
               
               
